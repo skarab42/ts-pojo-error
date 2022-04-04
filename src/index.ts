@@ -84,7 +84,7 @@ export class PojoError<
     Object.setPrototypeOf(this, new.target.prototype);
   }
 
-  toObject(): PojoObject<TType, TArgs, TPojo> {
+  toObject(): Unwrap<PojoObject<TType, TArgs, TPojo>> {
     return {
       type: this.type,
       args: [...this.args],
