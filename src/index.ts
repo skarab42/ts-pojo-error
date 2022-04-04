@@ -49,6 +49,17 @@ type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
   ) => error is PojoErrorInstance<TErrorTypes, TType>;
 };
 
+type PojoObject<
+  TType,
+  TArgs extends [unknown, ...unknown[]],
+  TPojo extends PojoErrorPayload,
+> = {
+  type: TType;
+  args: TArgs;
+  data: TPojo;
+  stack: string | undefined;
+};
+
 // ---------------------------------------------------------------------------
 // PojoError Class
 // ---------------------------------------------------------------------------
@@ -73,11 +84,12 @@ export class PojoError<
     Object.setPrototypeOf(this, new.target.prototype);
   }
 
-  toObject(): { type: TType; args: TArgs; data: TPojo } {
+  toObject(): PojoObject<TType, TArgs, TPojo> {
     return {
       type: this.type,
       args: [...this.args],
       data: { ...this.data },
+      stack: this.stack,
     };
   }
 
