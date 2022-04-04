@@ -23,3 +23,26 @@ exports[`error to object/json 1`] = `
   "type": "PAGE_NOT_FOUND",
 }
 `;
+
+exports[`error with two parameter (url, undefined) 1`] = `
+{
+  "message": "Page Not Found: http://www.skarab42.dev",
+  "request": {
+    "url": "http://www.skarab42.dev",
+    "user": undefined,
+  },
+}
+`;
+
+exports[`error with two parameters (url, user) 1`] = `
+{
+  "message": "Page Not Found: http://www.skarab42.dev",
+  "request": {
+    "url": "http://www.skarab42.dev",
+    "user": {
+      "isAdmin": true,
+      "name": "skarab42",
+    },
+  },
+}
+`;

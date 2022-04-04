@@ -93,17 +93,9 @@ test("error with two parameter (url, undefined)", () => {
     expect(error).instanceOf(PojoError);
 
     if (myErrors.is("PAGE_NOT_FOUND", error)) {
+      expect(error.data).toMatchSnapshot();
       expect(error.type).toBe("PAGE_NOT_FOUND");
       expect(error.args).toEqual(["http://www.skarab42.dev"]);
-      expect(error.data).toMatchInlineSnapshot(`
-        {
-          "message": "Page Not Found: http://www.skarab42.dev",
-          "request": {
-            "url": "http://www.skarab42.dev",
-            "user": undefined,
-          },
-        }
-      `);
       expect(error.message).toBe("Page Not Found: http://www.skarab42.dev");
     }
   }
@@ -124,20 +116,9 @@ test("error with two parameters (url, user)", () => {
     expect(error).instanceOf(PojoError);
 
     if (myErrors.is("PAGE_NOT_FOUND", error)) {
+      expect(error.data).toMatchSnapshot();
       expect(error.type).toBe("PAGE_NOT_FOUND");
       expect(error.args).toEqual(["http://www.skarab42.dev", user]);
-      expect(error.data).toMatchInlineSnapshot(`
-        {
-          "message": "Page Not Found: http://www.skarab42.dev",
-          "request": {
-            "url": "http://www.skarab42.dev",
-            "user": {
-              "isAdmin": true,
-              "name": "skarab42",
-            },
-          },
-        }
-      `);
       expect(error.message).toBe("Page Not Found: http://www.skarab42.dev");
     }
   }
