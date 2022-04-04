@@ -47,6 +47,9 @@ export type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
     type: TType,
     error: unknown,
   ) => error is PojoErrorInstance<TErrorTypes, TType>;
+  has<TType extends keyof TErrorTypes>(
+    error: unknown,
+  ): error is PojoErrorInstance<TErrorTypes, TType>;
 };
 
 export type PojoObject<
@@ -141,11 +144,21 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
     return error instanceof PojoError && error.type === type;
   }
 
+  function hasError<TType extends keyof TErrorTypes>(
+    error: unknown,
+  ): error is PojoErrorInstance<TErrorTypes, TType> {
+    return (
+      error instanceof PojoError &&
+      typeof enumObject[error.type as TType] !== "undefined"
+    );
+  }
+
   return {
     type: enumObject as Unwrap<typeof enumObject>,
     new: newError,
     throw: throwError,
     is: isError,
+    has: hasError,
     errors,
   };
 }
