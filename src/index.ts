@@ -1,25 +1,25 @@
 // ---------------------------------------------------------------------------
 // Pojo Types
 // ---------------------------------------------------------------------------
-type Unwrap<TType> = TType extends Record<string, unknown>
+export type Unwrap<TType> = TType extends Record<string, unknown>
   ? { [TKey in keyof TType]: TType[TKey] }
   : TType;
 
-type PojoErrorPayload = { message: string };
+export type PojoErrorPayload = { message: string };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type PojoErrorCallback = (...args: any) => PojoErrorPayload;
+export type PojoErrorCallback = (...args: any) => PojoErrorPayload;
 
-type PojoErrorTypes = Record<string, PojoErrorCallback>;
+export type PojoErrorTypes = Record<string, PojoErrorCallback>;
 
-type PojoEnum<TErrorTypes> = { [TKey in keyof TErrorTypes]: TKey };
+export type PojoEnum<TErrorTypes> = { [TKey in keyof TErrorTypes]: TKey };
 
-type PojoFakeEnum<TErrorTypes> = {
+export type PojoFakeEnum<TErrorTypes> = {
   enumObject: PojoEnum<TErrorTypes>;
   enumKeys: [keyof TErrorTypes];
 };
 
-type PojoErrorInstance<
+export type PojoErrorInstance<
   TErrorTypes extends PojoErrorTypes,
   TType extends keyof TErrorTypes,
 > = PojoError<
@@ -28,17 +28,17 @@ type PojoErrorInstance<
   ReturnType<TErrorTypes[TType]>
 >;
 
-type NewPojoError<TErrorTypes extends PojoErrorTypes> = <
+export type NewPojoError<TErrorTypes extends PojoErrorTypes> = <
   TType extends keyof TErrorTypes,
 >(
   type: TType,
   ...args: [...Parameters<TErrorTypes[TType]>]
 ) => PojoErrorInstance<TErrorTypes, TType>;
 
-type ThrowPojoError<TErrorTypes extends PojoErrorTypes> =
+export type ThrowPojoError<TErrorTypes extends PojoErrorTypes> =
   NewPojoError<TErrorTypes>;
 
-type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
+export type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
   type: Unwrap<PojoEnum<TErrorTypes>>;
   errors: TErrorTypes;
   new: NewPojoError<TErrorTypes>;
@@ -49,7 +49,7 @@ type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
   ) => error is PojoErrorInstance<TErrorTypes, TType>;
 };
 
-type PojoObject<
+export type PojoObject<
   TType,
   TArgs extends [unknown, ...unknown[]],
   TPojo extends PojoErrorPayload,
