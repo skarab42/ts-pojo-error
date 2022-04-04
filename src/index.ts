@@ -75,7 +75,7 @@ export class PojoError<
   readonly args: TArgs;
   readonly data: TPojo;
 
-  constructor(type: TType, args: TArgs, data: TPojo) {
+  constructor(type: TType, args: TArgs, data: TPojo, caller: Function) {
     super();
 
     this.type = type;
@@ -83,6 +83,10 @@ export class PojoError<
     this.data = data;
 
     this.message = data.message;
+
+    if (typeof Error.captureStackTrace === "function") {
+      Error.captureStackTrace(this, caller);
+    }
 
     Object.setPrototypeOf(this, new.target.prototype);
   }
@@ -127,7 +131,7 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
     const func = errors[type] as TErrorTypes[TType];
     const data = func(...args) as ReturnType<TErrorTypes[TType]>;
 
-    return new PojoError(type, args, data);
+    return new PojoError(type, args, data, newError);
   }
 
   function throwError<TType extends keyof TErrorTypes>(

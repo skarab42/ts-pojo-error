@@ -1,4 +1,9 @@
 {
+  "env": {
+    "node": true,
+    "browser": true
+  },
+
   "compilerOptions": {
     // [Language and Environment]
     "target": "ES2015",
