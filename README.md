@@ -109,6 +109,7 @@ export function action() {
 ## Catching & Typing errors
 
 - **is(** type: `infered`, error: `unknown` **)** : boolean
+- **has(** error: `unknown` **)** : boolean
 
 This is where it gets really interesting, the problem with exceptions is that once caught you don't know what type they are. You can of course create a bunch of custom error classes and use `instanceof` to overcome this. The advantage of `ts-pojo-error` is that you have a single error type `PojoError` which can be easily typed and serialized.
 
@@ -138,6 +139,14 @@ try {
 
     error.toObject(); // { type, args, data, stack?: string | undefined }
     error.toJSON(); // string
+  }
+
+  if (errors.has(error)) {
+    error.type; // "UNKNOWN" | "WARNING" | "FATAL" | ...
+  }
+
+  if (error instanceof PojoError) {
+    error.type; // any (Bad!)
   }
 }
 ```
