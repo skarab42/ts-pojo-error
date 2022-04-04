@@ -1,7 +1,7 @@
 {
   "name": "@skarab/ts-pojo-error",
   "version": "0.0.0-development",
-  "description": "🔥 Type safe pojo error will help you to easily create a typed and serializable error collection.",
+  "description": "🔥 Type safe pojo error will help you to easily create typed and serializable error.",
   "author": {
     "name": "skarab42",
     "email": "contact@skarab42.dev"
