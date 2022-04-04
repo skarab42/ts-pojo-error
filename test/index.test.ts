@@ -152,30 +152,14 @@ test("error to object/json", () => {
     user,
   );
 
-  expect(myError.toObject()).toMatchInlineSnapshot(`
-    {
-      "args": [
-        "http://www.skarab42.dev",
-        {
-          "isAdmin": true,
-          "name": "skarab42",
-        },
-      ],
-      "data": {
-        "message": "Page Not Found: http://www.skarab42.dev",
-        "request": {
-          "url": "http://www.skarab42.dev",
-          "user": {
-            "isAdmin": true,
-            "name": "skarab42",
-          },
-        },
-      },
-      "type": "PAGE_NOT_FOUND",
-    }
-  `);
+  const myErrorObject = myError.toObject();
 
-  expect(myError.toJSON()).toMatchInlineSnapshot(
-    '"{\\"type\\":\\"PAGE_NOT_FOUND\\",\\"args\\":[\\"http://www.skarab42.dev\\",{\\"name\\":\\"skarab42\\",\\"isAdmin\\":true}],\\"data\\":{\\"message\\":\\"Page Not Found: http://www.skarab42.dev\\",\\"request\\":{\\"url\\":\\"http://www.skarab42.dev\\",\\"user\\":{\\"name\\":\\"skarab42\\",\\"isAdmin\\":true}}}}"',
-  );
+  expect(myErrorObject).toMatchSnapshot({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    stack: expect.stringMatching(
+      /^Error: Page Not Found: http:\/\/www\.skarab42\.dev/,
+    ),
+  });
+
+  expect(JSON.parse(myError.toJSON())).toEqual(myErrorObject);
 });

@@ -1,0 +1,25 @@
+// Vitest Snapshot v1
+
+exports[`error to object/json 1`] = `
+{
+  "args": [
+    "http://www.skarab42.dev",
+    {
+      "isAdmin": true,
+      "name": "skarab42",
+    },
+  ],
+  "data": {
+    "message": "Page Not Found: http://www.skarab42.dev",
+    "request": {
+      "url": "http://www.skarab42.dev",
+      "user": {
+        "isAdmin": true,
+        "name": "skarab42",
+      },
+    },
+  },
+  "stack": StringMatching /\\^Error: Page Not Found: http:\\\\/\\\\/www\\\\\\.skarab42\\\\\\.dev/,
+  "type": "PAGE_NOT_FOUND",
+}
+`;
