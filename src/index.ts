@@ -28,13 +28,21 @@ type PojoErrorInstance<
   ReturnType<TErrorTypes[TType]>
 >;
 
+type NewPojoError<TErrorTypes extends PojoErrorTypes> = <
+  TType extends keyof TErrorTypes,
+>(
+  type: TType,
+  ...args: [...Parameters<TErrorTypes[TType]>]
+) => PojoErrorInstance<TErrorTypes, TType>;
+
+type ThrowPojoError<TErrorTypes extends PojoErrorTypes> =
+  NewPojoError<TErrorTypes>;
+
 type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
   type: Unwrap<PojoEnum<TErrorTypes>>;
   errors: TErrorTypes;
-  new: <TType extends keyof TErrorTypes>(
-    type: TType,
-    ...args: [...Parameters<TErrorTypes[TType]>]
-  ) => PojoErrorInstance<TErrorTypes, TType>;
+  new: NewPojoError<TErrorTypes>;
+  throw: ThrowPojoError<TErrorTypes>;
   is: <TType extends keyof TErrorTypes>(
     type: TType,
     error: unknown,
@@ -97,7 +105,7 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
 ): Unwrap<PojoFactory<TErrorTypes>> {
   const { enumObject } = fakeEnum(errors);
 
-  function newFactory<TType extends keyof TErrorTypes>(
+  function newError<TType extends keyof TErrorTypes>(
     type: TType,
     ...args: [...Parameters<TErrorTypes[TType]>]
   ): PojoErrorInstance<TErrorTypes, TType> {
@@ -107,7 +115,14 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
     return new PojoError(type, args, data);
   }
 
-  function isFactory<TType extends keyof TErrorTypes>(
+  function throwError<TType extends keyof TErrorTypes>(
+    type: TType,
+    ...args: [...Parameters<TErrorTypes[TType]>]
+  ): PojoErrorInstance<TErrorTypes, TType> {
+    throw newError(type, ...args);
+  }
+
+  function isError<TType extends keyof TErrorTypes>(
     type: TType,
     error: unknown,
   ): error is PojoErrorInstance<TErrorTypes, TType> {
@@ -116,8 +131,9 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
 
   return {
     type: enumObject as Unwrap<typeof enumObject>,
-    new: newFactory,
-    is: isFactory,
+    new: newError,
+    throw: throwError,
+    is: isError,
     errors,
   };
 }

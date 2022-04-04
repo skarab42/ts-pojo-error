@@ -31,6 +31,11 @@ test("factory.new", () => {
   expect(() => myErrors.new("PROUT")).toThrow();
 });
 
+test("factory.throw", () => {
+  const myErrors = factory(errors);
+  expect(() => myErrors.throw("FATAL")).toThrow("Fatal error");
+});
+
 test("error without parameter", () => {
   const myErrors = factory(errors);
   const myError = myErrors.new(myErrors.type.FATAL);
