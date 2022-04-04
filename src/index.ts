@@ -1,38 +1,4 @@
 // ---------------------------------------------------------------------------
-// Union to Tuple
-// Taken from https://catchts.com/union-array and slightly modified
-// ---------------------------------------------------------------------------
-type UnionToFunction<U> = U extends unknown ? (k: U) => void : never;
-
-type UnionToIntersection<U> = UnionToFunction<U> extends (k: infer I) => void
-  ? I
-  : never;
-
-type UnionToOverloadedFunction<U> = UnionToIntersection<UnionToFunction<U>>;
-
-type UnionPop<U> = UnionToOverloadedFunction<U> extends (a: infer A) => void
-  ? A
-  : never;
-
-type UnionMerge<TUnion, TTuple extends unknown[]> = [TUnion, ...TTuple];
-
-type UnionToSubArray<TUnion, TTuple extends unknown[]> = UnionToArray<
-  Exclude<TUnion, UnionPop<TUnion>>,
-  UnionMerge<UnionPop<TUnion>, TTuple>
->;
-
-type IsUnion<T> = [T] extends [UnionToIntersection<T>] ? false : true;
-
-type UnionToArray<
-  TUnion,
-  TTuple extends unknown[] = [],
-> = IsUnion<TUnion> extends true
-  ? UnionToSubArray<TUnion, TTuple>
-  : UnionMerge<TUnion, TTuple>;
-
-type ObjectKeys<TObject> = UnionToArray<keyof TObject>;
-
-// ---------------------------------------------------------------------------
 // Pojo Types
 // ---------------------------------------------------------------------------
 type Unwrap<TType> = TType extends Record<string, unknown>
@@ -63,9 +29,8 @@ type PojoErrorInstance<
 >;
 
 type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
-  type: keyof TErrorTypes;
-  types: ObjectKeys<TErrorTypes>;
-  enum: Unwrap<PojoEnum<TErrorTypes>>;
+  type: Unwrap<PojoEnum<TErrorTypes>>;
+  errors: TErrorTypes;
   new: <TType extends keyof TErrorTypes>(
     type: TType,
     ...args: [...Parameters<TErrorTypes[TType]>]
@@ -74,7 +39,6 @@ type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
     type: TType,
     error: unknown,
   ) => error is PojoErrorInstance<TErrorTypes, TType>;
-  errors: TErrorTypes;
 };
 
 // ---------------------------------------------------------------------------
@@ -131,7 +95,7 @@ function fakeEnum<TErrorTypes extends PojoErrorTypes>(
 export function factory<TErrorTypes extends PojoErrorTypes>(
   errors: TErrorTypes,
 ): Unwrap<PojoFactory<TErrorTypes>> {
-  const { enumKeys, enumObject } = fakeEnum(errors);
+  const { enumObject } = fakeEnum(errors);
 
   function newFactory<TType extends keyof TErrorTypes>(
     type: TType,
@@ -151,9 +115,7 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
   }
 
   return {
-    type: enumKeys as unknown as typeof enumKeys[number],
-    types: enumKeys as ObjectKeys<TErrorTypes>,
-    enum: enumObject as Unwrap<typeof enumObject>,
+    type: enumObject as Unwrap<typeof enumObject>,
     new: newFactory,
     is: isFactory,
     errors,

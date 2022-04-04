@@ -1,13 +1,6 @@
-import { factory, PojoError } from "../src";
 import { expect, test } from "vitest";
-import {
-  ErrorsUnion,
-  errors,
-  ErrorsArray,
-  ErrorsEnum,
-  errorsArray,
-  errorsEnum,
-} from "./fixtures";
+import { factory, PojoError } from "../src";
+import { errors, ErrorsEnum, errorsEnum } from "./fixtures";
 
 function assertType<TExpected>(input: TExpected): TExpected {
   return input;
@@ -16,14 +9,10 @@ function assertType<TExpected>(input: TExpected): TExpected {
 test("factory", () => {
   const myErrors = factory(errors);
 
-  assertType<ErrorsUnion>(myErrors.type);
-  assertType<ErrorsArray>(myErrors.types);
-  assertType<ErrorsEnum>(myErrors.enum);
+  assertType<ErrorsEnum>(myErrors.type);
   assertType<typeof errors>(myErrors.errors);
 
-  expect(myErrors.type).toEqual(errorsArray);
-  expect(myErrors.types).toEqual(errorsArray);
-  expect(myErrors.enum).toEqual(errorsEnum);
+  expect(myErrors.type).toEqual(errorsEnum);
   expect(myErrors.errors).toBe(errors);
 });
 
@@ -31,12 +20,12 @@ test("factory.new", () => {
   const myErrors = factory(errors);
 
   myErrors.new("FATAL", "Oupsy!");
-  myErrors.new(myErrors.enum.FATAL);
+  myErrors.new(myErrors.type.FATAL);
 
   // @ts-expect-error Expected 2-3 arguments, but got 1.
-  myErrors.new(myErrors.enum.PAGE_NOT_FOUND);
+  myErrors.new(myErrors.type.PAGE_NOT_FOUND);
   // @ts-expect-error Expected 1-2 arguments, but got 3.
-  myErrors.new(myErrors.enum.FATAL, "Oupsy!", 42);
+  myErrors.new(myErrors.type.FATAL, "Oupsy!", 42);
 
   // @ts-expect-error Argument of type '"PROUT"' is not assignable ...
   expect(() => myErrors.new("PROUT")).toThrow();
@@ -44,7 +33,7 @@ test("factory.new", () => {
 
 test("error without parameter", () => {
   const myErrors = factory(errors);
-  const myError = myErrors.new(myErrors.enum.FATAL);
+  const myError = myErrors.new(myErrors.type.FATAL);
 
   assertType<"FATAL">(myError.type);
   assertType<Parameters<typeof errors.FATAL>>(myError.args);
@@ -70,7 +59,7 @@ test("error without parameter", () => {
 
 test("error with one parameter", () => {
   const myErrors = factory(errors);
-  const myError = myErrors.new(myErrors.enum.FATAL, "My custom fatal error");
+  const myError = myErrors.new(myErrors.type.FATAL, "My custom fatal error");
 
   try {
     throw myError;
@@ -89,7 +78,7 @@ test("error with one parameter", () => {
 test("error with two parameter (url, undefined)", () => {
   const myErrors = factory(errors);
   const myError = myErrors.new(
-    myErrors.enum.PAGE_NOT_FOUND,
+    myErrors.type.PAGE_NOT_FOUND,
     "http://www.skarab42.dev",
   );
 
@@ -119,7 +108,7 @@ test("error with two parameters (url, user)", () => {
   const user = { name: "skarab42", isAdmin: true };
   const myErrors = factory(errors);
   const myError = myErrors.new(
-    myErrors.enum.PAGE_NOT_FOUND,
+    myErrors.type.PAGE_NOT_FOUND,
     "http://www.skarab42.dev",
     user,
   );
@@ -153,7 +142,7 @@ test("error to object/json", () => {
   const user = { name: "skarab42", isAdmin: true };
   const myErrors = factory(errors);
   const myError = myErrors.new(
-    myErrors.enum.PAGE_NOT_FOUND,
+    myErrors.type.PAGE_NOT_FOUND,
     "http://www.skarab42.dev",
     user,
   );
