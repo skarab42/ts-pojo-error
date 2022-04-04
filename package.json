@@ -1,13 +1,23 @@
 {
   "name": "@skarab/ts-pojo-error",
   "version": "0.0.0-development",
-  "description": "Type safe pojo error project",
+  "description": "🔥 Type safe pojo error will help you to easily create a typed and serializable error collection.",
   "author": {
     "name": "skarab42",
     "email": "contact@skarab42.dev"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/skarab42/ts-pojo-error.git"
+  },
+  "homepage": "https://github.com/skarab42/ts-pojo-error",
+  "bugs": "https://github.com/skarab42/ts-pojo-error/issues",
+  "funding": "https://github.com/sponsors/skarab42",
   "license": "MIT",
-  "private": true,
+  "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -18,25 +28,44 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "up-hooks": "npx simple-git-hooks",
+    "prepare": "pnpm up-hooks",
     "build": "tsup",
+    "start": "node dist/index.js",
     "dev": "tsup --watch",
-    "start": "node dist/index.js"
+    "test": "tsc --noEmit && vitest run",
+    "test-watch": "vitest watch",
+    "test-coverage": "vitest run --coverage",
+    "format": "prettier --write ./**/*{.js,.ts,.json,.md} --ignore-path .gitignore",
+    "lint": "eslint --ext \".js,.ts\" --max-warnings=0 --ignore-path .gitignore .",
+    "lint-fix": "pnpm lint --fix"
   },
   "engines": {
     "node": ">=12",
     "pnpm": ">=6"
   },
-  "packageManager": "pnpm@6.32.3",
+  "packageManager": "pnpm@6.32.4",
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.17.0",
     "@typescript-eslint/parser": "^5.17.0",
+    "c8": "^7.11.0",
     "eslint": "^8.12.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-no-only-tests": "^2.6.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "lint-staged": "^12.3.7",
     "prettier": "^2.6.1",
+    "simple-git-hooks": "^2.7.0",
     "tsup": "^5.12.1",
+    "typescript": "^4.6.3",
+    "v8": "^0.1.0",
+    "vitest": "^0.8.1"
+  },
+  "peerDependencies": {
     "typescript": "^4.6.3"
   }
 }
