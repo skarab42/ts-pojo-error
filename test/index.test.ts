@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import { factory, PojoError } from "../src";
-import { errors, ErrorsEnum, errorsEnum } from "./fixtures";
+import { errors, ErrorsEnum, errorsEnum, sessionErrors } from "./fixtures";
 
 function assertType<TExpected>(input: TExpected): TExpected {
   return input;
@@ -34,6 +34,32 @@ test("factory.new", () => {
 test("factory.throw", () => {
   const myErrors = factory(errors);
   expect(() => myErrors.throw("FATAL")).toThrow("Fatal error");
+});
+
+test("factory.has", () => {
+  const myErrors = factory(errors);
+  const mySessionErrors = factory(sessionErrors);
+
+  try {
+    throw myErrors.new("FATAL");
+  } catch (error) {
+    expect(myErrors.has(error)).toBe(true);
+    expect(mySessionErrors.has(error)).toBe(false);
+
+    if (mySessionErrors.has(error)) {
+      assertType<"LOGIN" | "AUTH">(error.type);
+    }
+  }
+});
+
+test("instanceof PojoError", () => {
+  const myErrors = factory(errors);
+
+  try {
+    throw myErrors.new("FATAL");
+  } catch (error) {
+    expect(error instanceof PojoError).toBe(true);
+  }
 });
 
 test("error without parameter", () => {

@@ -29,6 +29,16 @@ export const errors = {
   },
 };
 
+export const sessionErrors = {
+  AUTH() {
+    return { message: "Auth error..." };
+  },
+
+  LOGIN(message: string) {
+    return { message, code: 42 };
+  },
+};
+
 export const errorsArray = [
   "UNKNOWN",
   "WARNING",
