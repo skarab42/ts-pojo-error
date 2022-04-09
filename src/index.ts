@@ -35,8 +35,12 @@ export type NewPojoError<TErrorTypes extends PojoErrorTypes> = <
   ...args: [...Parameters<TErrorTypes[TType]>]
 ) => PojoErrorInstance<TErrorTypes, TType>;
 
-export type ThrowPojoError<TErrorTypes extends PojoErrorTypes> =
-  NewPojoError<TErrorTypes>;
+export type ThrowPojoError<TErrorTypes extends PojoErrorTypes> = <
+  TType extends keyof TErrorTypes,
+>(
+  type: TType,
+  ...args: [...Parameters<TErrorTypes[TType]>]
+) => never;
 
 export type NewPojoErrorWithCause<TErrorTypes extends PojoErrorTypes> = <
   TType extends keyof TErrorTypes,
@@ -46,8 +50,13 @@ export type NewPojoErrorWithCause<TErrorTypes extends PojoErrorTypes> = <
   ...args: [...Parameters<TErrorTypes[TType]>]
 ) => PojoErrorInstance<TErrorTypes, TType>;
 
-export type ThrowPojoErrorWithCause<TErrorTypes extends PojoErrorTypes> =
-  NewPojoErrorWithCause<TErrorTypes>;
+export type ThrowPojoErrorWithCause<TErrorTypes extends PojoErrorTypes> = <
+  TType extends keyof TErrorTypes,
+>(
+  cause: Error,
+  type: TType,
+  ...args: [...Parameters<TErrorTypes[TType]>]
+) => never;
 
 export type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
   type: Unwrap<PojoEnum<TErrorTypes>>;
@@ -55,7 +64,7 @@ export type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
   new: NewPojoError<TErrorTypes>;
   newFrom: NewPojoErrorWithCause<TErrorTypes>;
   throw: ThrowPojoError<TErrorTypes>;
-  throwFrom: NewPojoErrorWithCause<TErrorTypes>;
+  throwFrom: ThrowPojoErrorWithCause<TErrorTypes>;
   is: <TType extends keyof TErrorTypes>(
     type: TType,
     error: unknown,
@@ -197,7 +206,7 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
   function throwError<TType extends keyof TErrorTypes>(
     type: TType,
     ...args: [...Parameters<TErrorTypes[TType]>]
-  ): PojoErrorInstance<TErrorTypes, TType> {
+  ): never {
     throw newError(type, ...args);
   }
 
@@ -205,7 +214,7 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
     cause: Error,
     type: TType,
     ...args: [...Parameters<TErrorTypes[TType]>]
-  ): PojoErrorInstance<TErrorTypes, TType> {
+  ): never {
     throw newFromError(cause, type, ...args);
   }
 
