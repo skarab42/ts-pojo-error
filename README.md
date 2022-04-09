@@ -41,12 +41,12 @@
 
 # Features
 
-- Type safe & autocompletion
-- Serializable output
-- [Stackable](https://github.com/tc39/proposal-error-cause) errors
-- Node or Browser
-- ESM or CJS
-- Well tested
+- 🔥 Type safe & autocompletion
+- 👓 Serializable output
+- 🔗 [Stackable](https://github.com/tc39/proposal-error-cause) errors
+- 🌌 Node or Browser
+- 🌓 ESM or CJS
+- ✅ Well tested
 
 # Usage
 
@@ -188,9 +188,9 @@ import { stackWithCauses } from "pony-cause";
 
 const error1 = myErrors.new("UNKNOWN");
 const erorr2 = myErrors.newFrom(error1, "FATAL");
-const error4 = myErrors.newFrom(error3, "WARNING", "Attention to danger !!!");
-const error3 = myErrors.newFrom(
-  erorr2,
+const error3 = myErrors.newFrom(error2, "WARNING", "Attention to danger !!!");
+const error4 = myErrors.newFrom(
+  erorr3,
   "PAGE_NOT_FOUND",
   "http://www.prout.com",
 );
