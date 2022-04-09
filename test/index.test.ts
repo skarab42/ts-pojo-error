@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { expect, test } from "vitest";
 import { factory, PojoError } from "../src";
 import { errors, ErrorsEnum, errorsEnum, sessionErrors } from "./fixtures";
@@ -162,16 +163,15 @@ test("error to object/json", () => {
   const myErrorObject = myError.toObject();
 
   expect(myErrorObject).toMatchSnapshot({
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     stack: expect.stringMatching(
-      /^Error: Page Not Found: http:\/\/www\.skarab42\.dev/,
+      /^PojoError: Page Not Found: http:\/\/www\.skarab42\.dev/,
     ),
   });
 
   expect(JSON.parse(myError.toJSON())).toEqual(myErrorObject);
 });
 
-test("new error cause", () => {
+test("new error with cause", () => {
   const myErrors = factory(errors);
 
   try {
@@ -187,7 +187,7 @@ test("new error cause", () => {
   }
 });
 
-test("throw error cause", () => {
+test("throw error with cause", () => {
   const myErrors = factory(errors);
 
   function action(): void {
@@ -205,6 +205,30 @@ test("throw error cause", () => {
   } catch (error) {
     if (myErrors.is("FATAL", error)) {
       expect(myErrors.is("UNKNOWN", error.cause)).toBe(true);
+    }
+  }
+});
+
+test("error with cause to object", () => {
+  const myErrors = factory(errors);
+
+  try {
+    throw myErrors.new("UNKNOWN");
+  } catch (error) {
+    if (myErrors.has(error)) {
+      const newError1 = myErrors.newFrom(error, "FATAL");
+      const newError2 = myErrors.newFrom(newError1, "PAGE_NOT_FOUND", "www");
+      const newError3 = myErrors.newFrom(newError2, "WARNING", "Danger !!!");
+
+      expect(newError3.causeToObject()).toMatchSnapshot({
+        stack: expect.stringMatching(/^PojoError: Page Not Found/),
+        cause: {
+          stack: expect.stringMatching(/^PojoError: Fatal error/),
+          cause: {
+            stack: expect.stringMatching(/^PojoError: Unknown error/),
+          },
+        },
+      });
     }
   }
 });

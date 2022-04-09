@@ -9,6 +9,7 @@ exports[`error to object/json 1`] = `
       "name": "skarab42",
     },
   ],
+  "cause": undefined,
   "data": {
     "message": "Page Not Found: http://www.skarab42.dev",
     "request": {
@@ -19,7 +20,41 @@ exports[`error to object/json 1`] = `
       },
     },
   },
-  "stack": StringMatching /\\^Error: Page Not Found: http:\\\\/\\\\/www\\\\\\.skarab42\\\\\\.dev/,
+  "stack": StringMatching /\\^PojoError: Page Not Found: http:\\\\/\\\\/www\\\\\\.skarab42\\\\\\.dev/,
+  "type": "PAGE_NOT_FOUND",
+}
+`;
+
+exports[`error with cause to object 1`] = `
+{
+  "args": [
+    "www",
+  ],
+  "cause": {
+    "args": [],
+    "cause": {
+      "args": [],
+      "cause": undefined,
+      "data": {
+        "message": "Unknown error...",
+      },
+      "stack": StringMatching /\\^PojoError: Unknown error/,
+      "type": "UNKNOWN",
+    },
+    "data": {
+      "message": "Fatal error",
+    },
+    "stack": StringMatching /\\^PojoError: Fatal error/,
+    "type": "FATAL",
+  },
+  "data": {
+    "message": "Page Not Found: www",
+    "request": {
+      "url": "www",
+      "user": undefined,
+    },
+  },
+  "stack": StringMatching /\\^PojoError: Page Not Found/,
   "type": "PAGE_NOT_FOUND",
 }
 `;
