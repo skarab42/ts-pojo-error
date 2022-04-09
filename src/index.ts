@@ -65,6 +65,12 @@ export type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
   ) => error is PojoErrorInstance<TErrorTypes, TType>;
 };
 
+export type PojoObjectCause = PojoObject<
+  string,
+  [unknown, ...unknown[]],
+  PojoErrorPayload
+>;
+
 export type PojoObject<
   TType,
   TArgs extends [unknown, ...unknown[]],
@@ -74,6 +80,7 @@ export type PojoObject<
   args: TArgs;
   data: TPojo;
   stack: string | undefined;
+  cause: PojoObjectCause | undefined;
 };
 
 // ---------------------------------------------------------------------------
@@ -110,12 +117,31 @@ export class PojoError<
     Object.setPrototypeOf(this, new.target.prototype);
   }
 
+  causeToObject(): PojoObjectCause | undefined {
+    if (!this.cause) {
+      return undefined;
+    }
+
+    if (this.cause instanceof PojoError) {
+      return this.cause.toObject();
+    }
+
+    return {
+      type: this.cause.name,
+      args: [this.cause.message],
+      data: { message: this.cause.message },
+      stack: this.cause.stack,
+      cause: undefined,
+    };
+  }
+
   toObject(): Unwrap<PojoObject<TType, TArgs, TPojo>> {
     return {
       type: this.type,
       args: [...this.args],
       data: { ...this.data },
       stack: this.stack,
+      cause: this.causeToObject(),
     };
   }
 
