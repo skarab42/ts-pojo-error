@@ -27,35 +27,29 @@ exports[`error to object/json 1`] = `
 
 exports[`error with cause to object 1`] = `
 {
-  "args": [
-    "www",
-  ],
+  "args": Any<Array>,
   "cause": {
-    "args": [],
+    "args": Any<Array>,
     "cause": {
-      "args": [],
-      "cause": undefined,
-      "data": {
-        "message": "Unknown error...",
+      "args": Any<Array>,
+      "cause": {
+        "args": Any<Array>,
+        "cause": undefined,
+        "data": Any<Object>,
+        "stack": StringMatching /\\^Error: Native Error!!!/,
+        "type": Any<String>,
       },
-      "stack": StringMatching /\\^PojoError: Unknown error/,
-      "type": "UNKNOWN",
+      "data": Any<Object>,
+      "stack": StringMatching /\\^PojoError: Fatal error/,
+      "type": Any<String>,
     },
-    "data": {
-      "message": "Fatal error",
-    },
-    "stack": StringMatching /\\^PojoError: Fatal error/,
-    "type": "FATAL",
+    "data": Any<Object>,
+    "stack": StringMatching /\\^PojoError: Page Not Found/,
+    "type": Any<String>,
   },
-  "data": {
-    "message": "Page Not Found: www",
-    "request": {
-      "url": "www",
-      "user": undefined,
-    },
-  },
-  "stack": StringMatching /\\^PojoError: Page Not Found/,
-  "type": "PAGE_NOT_FOUND",
+  "data": Any<Object>,
+  "stack": StringMatching /\\^PojoError: Danger !!!/,
+  "type": Any<String>,
 }
 `;
 

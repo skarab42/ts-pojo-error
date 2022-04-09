@@ -213,19 +213,32 @@ test("error with cause to object", () => {
   const myErrors = factory(errors);
 
   try {
-    throw myErrors.new("UNKNOWN");
+    throw new Error("Native Error!!!");
   } catch (error) {
-    if (myErrors.has(error)) {
+    if (error instanceof Error) {
       const newError1 = myErrors.newFrom(error, "FATAL");
       const newError2 = myErrors.newFrom(newError1, "PAGE_NOT_FOUND", "www");
       const newError3 = myErrors.newFrom(newError2, "WARNING", "Danger !!!");
 
-      expect(newError3.causeToObject()).toMatchSnapshot({
-        stack: expect.stringMatching(/^PojoError: Page Not Found/),
+      const common = {
+        type: expect.any(String),
+        args: expect.any(Array),
+        data: expect.any(Object),
+      };
+
+      expect(newError3.toObject()).toMatchSnapshot({
+        ...common,
+        stack: expect.stringMatching(/^PojoError: Danger !!!/),
         cause: {
-          stack: expect.stringMatching(/^PojoError: Fatal error/),
+          ...common,
+          stack: expect.stringMatching(/^PojoError: Page Not Found/),
           cause: {
-            stack: expect.stringMatching(/^PojoError: Unknown error/),
+            ...common,
+            stack: expect.stringMatching(/^PojoError: Fatal error/),
+            cause: {
+              ...common,
+              stack: expect.stringMatching(/^Error: Native Error!!!/),
+            },
           },
         },
       });
