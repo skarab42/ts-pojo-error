@@ -103,7 +103,7 @@ export class PojoError<
   readonly type: TType;
   readonly args: TArgs;
   readonly data: TPojo;
-  readonly cause?: Error | undefined;
+  override readonly cause?: Error;
 
   constructor(
     type: TType,
@@ -116,9 +116,12 @@ export class PojoError<
     this.type = type;
     this.args = args;
     this.data = data;
-    this.cause = options.cause;
     this.message = data.message;
     this.name = this.constructor.name;
+
+    // @ts-expect-error error TS2412: Type 'Error | undefined' is not
+    // assignable to type 'Error' with 'exactOptionalPropertyTypes: true'.
+    this.cause = options.cause;
 
     if (typeof Error.captureStackTrace === "function") {
       Error.captureStackTrace(this, options.constructorOpt);
