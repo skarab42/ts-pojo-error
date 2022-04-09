@@ -38,18 +38,31 @@ export type NewPojoError<TErrorTypes extends PojoErrorTypes> = <
 export type ThrowPojoError<TErrorTypes extends PojoErrorTypes> =
   NewPojoError<TErrorTypes>;
 
+export type NewPojoErrorWithCause<TErrorTypes extends PojoErrorTypes> = <
+  TType extends keyof TErrorTypes,
+>(
+  cause: Error,
+  type: TType,
+  ...args: [...Parameters<TErrorTypes[TType]>]
+) => PojoErrorInstance<TErrorTypes, TType>;
+
+export type ThrowPojoErrorWithCause<TErrorTypes extends PojoErrorTypes> =
+  NewPojoErrorWithCause<TErrorTypes>;
+
 export type PojoFactory<TErrorTypes extends PojoErrorTypes> = {
   type: Unwrap<PojoEnum<TErrorTypes>>;
   errors: TErrorTypes;
   new: NewPojoError<TErrorTypes>;
+  newFrom: NewPojoErrorWithCause<TErrorTypes>;
   throw: ThrowPojoError<TErrorTypes>;
+  throwFrom: NewPojoErrorWithCause<TErrorTypes>;
   is: <TType extends keyof TErrorTypes>(
     type: TType,
     error: unknown,
   ) => error is PojoErrorInstance<TErrorTypes, TType>;
-  has<TType extends keyof TErrorTypes>(
+  has: <TType extends keyof TErrorTypes>(
     error: unknown,
-  ): error is PojoErrorInstance<TErrorTypes, TType>;
+  ) => error is PojoErrorInstance<TErrorTypes, TType>;
 };
 
 export type PojoObject<
@@ -74,18 +87,24 @@ export class PojoError<
   readonly type: TType;
   readonly args: TArgs;
   readonly data: TPojo;
+  readonly cause?: Error | undefined;
 
-  constructor(type: TType, args: TArgs, data: TPojo, caller: Function) {
+  constructor(
+    type: TType,
+    args: TArgs,
+    data: TPojo,
+    options: { cause?: Error; constructorOpt?: Function },
+  ) {
     super();
 
     this.type = type;
     this.args = args;
     this.data = data;
-
+    this.cause = options.cause;
     this.message = data.message;
 
     if (typeof Error.captureStackTrace === "function") {
-      Error.captureStackTrace(this, caller);
+      Error.captureStackTrace(this, options.constructorOpt);
     }
 
     Object.setPrototypeOf(this, new.target.prototype);
@@ -131,7 +150,18 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
     const func = errors[type] as TErrorTypes[TType];
     const data = func(...args) as ReturnType<TErrorTypes[TType]>;
 
-    return new PojoError(type, args, data, newError);
+    return new PojoError(type, args, data, { constructorOpt: newError });
+  }
+
+  function newFromError<TType extends keyof TErrorTypes>(
+    cause: Error,
+    type: TType,
+    ...args: [...Parameters<TErrorTypes[TType]>]
+  ): PojoErrorInstance<TErrorTypes, TType> {
+    const func = errors[type] as TErrorTypes[TType];
+    const data = func(...args) as ReturnType<TErrorTypes[TType]>;
+
+    return new PojoError(type, args, data, { cause, constructorOpt: newError });
   }
 
   function throwError<TType extends keyof TErrorTypes>(
@@ -139,6 +169,14 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
     ...args: [...Parameters<TErrorTypes[TType]>]
   ): PojoErrorInstance<TErrorTypes, TType> {
     throw newError(type, ...args);
+  }
+
+  function throwFromError<TType extends keyof TErrorTypes>(
+    cause: Error,
+    type: TType,
+    ...args: [...Parameters<TErrorTypes[TType]>]
+  ): PojoErrorInstance<TErrorTypes, TType> {
+    throw newFromError(cause, type, ...args);
   }
 
   function isError<TType extends keyof TErrorTypes>(
@@ -160,7 +198,9 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
   return {
     type: enumObject as Unwrap<typeof enumObject>,
     new: newError,
+    newFrom: newFromError,
     throw: throwError,
+    throwFrom: throwFromError,
     is: isError,
     has: hasError,
     errors,
