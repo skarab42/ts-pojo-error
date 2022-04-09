@@ -109,6 +109,7 @@ export class PojoError<
     this.data = data;
     this.cause = options.cause;
     this.message = data.message;
+    this.name = this.constructor.name;
 
     if (typeof Error.captureStackTrace === "function") {
       Error.captureStackTrace(this, options.constructorOpt);
