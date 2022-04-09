@@ -43,6 +43,7 @@
 
 - Type safe & autocompletion
 - Serializable output
+- [Stackable](https://github.com/tc39/proposal-error-cause) errors
 - Node or Browser
 - ESM or CJS
 - Well tested
@@ -137,6 +138,8 @@ try {
     error.args; // ["Oupsy!"] : [message?: string | undefined]
     error.data; // { message: "Oupsy!" }: { message: string }
 
+    error.cause; // Error | undefined (see "Stacking of errors" below)
+
     error.toObject(); // { type, args, data, stack?: string | undefined }
     error.toJSON(); // string
   }
@@ -149,6 +152,67 @@ try {
     error.type; // any (Bad!)
   }
 }
+```
+
+## Stacking of errors
+
+- **newFrom(** cause: Error, type: `infered`, ...args: `infered[]` **)** : `PojoError`
+- **throwFrom(** cause: Error, type: `infered`, ...args: `infered[]` **)** : `never`
+
+Basically it adds a `.cause` property with the parent error to the newly created `PojoError`, see [Error Cause](https://github.com/tc39/proposal-error-cause) tc39 proposal for further information.
+
+```ts
+try {
+  throw myErrors.new("UNKNOWN");
+} catch (error) {
+  throw myErrors.newFrom(error, "FATAL");
+}
+```
+
+You can stack any type of error.
+
+```ts
+try {
+  throw new Error("Unknown error");
+} catch (error) {
+  myErrors.throwFrom(error, "FATAL");
+}
+```
+
+### Usage with [voxpelli/pony-cause](https://github.com/voxpelli/pony-cause)
+
+This library coded by [@voxpelli](https://twitter.com/voxpelli/status/1438476680537034756) includes a couple of helpers inspired by VError, supporting both standard causes and VError causes.
+
+```ts
+import { stackWithCauses } from "pony-cause";
+
+const error1 = myErrors.new("UNKNOWN");
+const erorr2 = myErrors.newFrom(error1, "FATAL");
+const error4 = myErrors.newFrom(error3, "WARNING", "Attention to danger !!!");
+const error3 = myErrors.newFrom(
+  erorr2,
+  "PAGE_NOT_FOUND",
+  "http://www.prout.com",
+);
+
+console.log("We had a mishap:", stackWithCauses(error4));
+```
+
+To make the example more readable I have replaced the full stack with `...` but the actual output contains it.
+
+```bash
+We had a mishap: PojoError: Page Not Found: http://www.prout.com
+    at index.ts:191:31
+    at ...
+caused by: PojoError: Attention to danger !!!
+    at index.ts:190:31
+    at ...
+caused by: PojoError: Fatal error
+    at index.ts:189:31
+    at ...
+caused by: PojoError: Unknown error...
+    at index.ts:188:34
+    at ...
 ```
 
 # Contributing 💜
