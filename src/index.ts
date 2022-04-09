@@ -188,7 +188,10 @@ export function factory<TErrorTypes extends PojoErrorTypes>(
     const func = errors[type] as TErrorTypes[TType];
     const data = func(...args) as ReturnType<TErrorTypes[TType]>;
 
-    return new PojoError(type, args, data, { cause, constructorOpt: newError });
+    return new PojoError(type, args, data, {
+      cause,
+      constructorOpt: newFromError,
+    });
   }
 
   function throwError<TType extends keyof TErrorTypes>(
