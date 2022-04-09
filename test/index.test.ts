@@ -170,3 +170,41 @@ test("error to object/json", () => {
 
   expect(JSON.parse(myError.toJSON())).toEqual(myErrorObject);
 });
+
+test("new error cause", () => {
+  const myErrors = factory(errors);
+
+  try {
+    throw myErrors.new("UNKNOWN");
+  } catch (error) {
+    if (myErrors.has(error)) {
+      const newError = myErrors.newFrom(error, "FATAL");
+
+      if (myErrors.is("FATAL", newError)) {
+        expect(newError.cause).toBe(error);
+      }
+    }
+  }
+});
+
+test("throw error cause", () => {
+  const myErrors = factory(errors);
+
+  function action(): void {
+    try {
+      throw myErrors.new("UNKNOWN");
+    } catch (error) {
+      if (myErrors.has(error)) {
+        myErrors.throwFrom(error, "FATAL");
+      }
+    }
+  }
+
+  try {
+    action();
+  } catch (error) {
+    if (myErrors.is("FATAL", error)) {
+      expect(myErrors.is("UNKNOWN", error.cause)).toBe(true);
+    }
+  }
+});
