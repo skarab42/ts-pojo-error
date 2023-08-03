@@ -294,7 +294,7 @@ packages:
       lodash: 4.17.21
       nerf-dart: 1.0.0
       normalize-url: 6.1.0
-      npm: 8.6.0
+      npm: 8.19.4
       rc: 1.2.8
       read-pkg: 5.2.0
       registry-auth-token: 4.2.1
@@ -2372,9 +2372,9 @@ packages:
       path-key: 3.1.1
     dev: true
 
-  /npm/8.6.0:
-    resolution: {integrity: sha512-icekvN8FJFESIFkLaFEVl05Nocl5Id5HnoVhJzhCUvtNY8tj9kfUlH/J527fZq/8ltsAUqpettfutwRjQYS2fA==}
-    engines: {node: ^12.13.0 || ^14.15.0 || >=16}
+  /npm/8.19.4:
+    resolution: {integrity: sha512-3HANl8i9DKnUA89P4KEgVNN28EjSeDCmvEqbzOAuxCFDzdBZzjUl99zgnGpOUumvW5lvJo2HKcjrsc+tfyv1Hw==}
+    engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
     hasBin: true
     dev: true
     bundledDependencies:
@@ -2387,8 +2387,6 @@ packages:
       - '@npmcli/package-json'
       - '@npmcli/run-script'
       - abbrev
-      - ansicolors
-      - ansistyles
       - archy
       - cacache
       - chalk
@@ -2397,6 +2395,7 @@ packages:
       - cli-table3
       - columnify
       - fastest-levenshtein
+      - fs-minipass
       - glob
       - graceful-fs
       - hosted-git-info
@@ -2416,6 +2415,7 @@ packages:
       - libnpmteam
       - libnpmversion
       - make-fetch-happen
+      - minimatch
       - minipass
       - minipass-pipeline
       - mkdirp
@@ -2432,6 +2432,7 @@ packages:
       - npm-user-validate
       - npmlog
       - opener
+      - p-map
       - pacote
       - parse-conflict-json
       - proc-log
